@@ -1,7 +1,7 @@
 class UI {
     constructor() {
         this.posts = document.querySelector('#posts');
-        this.titleInput = document.querySelector('title');
+        this.titleInput = document.querySelector('#title');
         this.bodyInput = document.querySelector('#body');
         this.idInput = document.querySelector('#id');
         this.postSubmit = document.querySelector('.post-submit');
@@ -31,6 +31,34 @@ class UI {
         })
 
         this.posts.innerHTML = output;
+    }
+
+    showAlert(message, className) {
+        const div = document.createElement('div');
+        div.className = className;
+        div.appendChild(document.createTextNode(`${message}`));
+
+        /* get container */
+        const container = document.querySelector('.postContainer');
+
+        /* get posts container */
+        const posts = document.querySelector('#posts');
+
+        container.insertBefore(div, posts);
+
+        setTimeout(() => this.clearAlert(), 3000)
+    }
+
+    clearAlert() {
+        const currentAlert = document.querySelector('.alert');
+        if (currentAlert) {
+            currentAlert.remove();
+        }
+    }
+
+    clearInput() {
+        this.titleInput.value = '';
+        this.bodyInput.value = '';
     }
 }
 
