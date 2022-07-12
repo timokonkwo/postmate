@@ -18,8 +18,12 @@ class UI {
                         <h4 class="card-title">${post.title}</h4>
                         <p class="card-text">${post.body}</p>
 
-                        <a href="#" class="edit">
+                        <a href="#" class="edit card-link">
                             <i class="fa fa-pencil"></i>
+                        </a>
+
+                        <a href="#" class="edit card-link">
+                            <i class="fa fa-delete"></i>
                         </a>
                     </div>
                 </div>
