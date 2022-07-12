@@ -7,6 +7,9 @@ document.addEventListener('DOMContentLoaded', getPosts);
 /* Add posts on clicking post button */
 document.querySelector(".post-submit").addEventListener('click', postSubmit);
 
+/* show edit state on clicking edit button */
+document.querySelector('#posts').addEventListener('click', showEditState);
+
 /* delete posts on clicking delete button */
 document.querySelector('#posts').addEventListener('click', deletePost);
 
@@ -41,6 +44,23 @@ function postSubmit() {
 
 }
 
+
+/* Function to show edit state */
+function showEditState(e) {
+    const target = e.target.parentElement;
+    if (target.classList.contains('edit')) {
+        const id = target.id;
+        const title = target.previousElementSibling.previousElementSibling.textContent;
+        const body = target.previousElementSibling.textContent;
+
+        const data = { id, title, body };
+
+        ui.fillForm(data);
+    }
+
+    e.preventDefault()
+}
+
 /* Function to delete a post */
 function deletePost(e) {
     const target = e.target.parentElement;
@@ -52,10 +72,13 @@ function deletePost(e) {
             http.delete(`http://localhost:3000/posts/${id}`)
                 .then(() => {
                     ui.clearAlert();
+                    ui.clearInput();
                     ui.showAlert('Post deleted', 'alert alert-danger');
                     getPosts();
                 })
-                .catch(() => ui.showAlert("An Error Occured", "alert alert-danger"))
+                .catch(() => ui.showAlert("An Error Occured", "alert alert-danger"));
         }
     }
+
+    e.preventDefault()
 }

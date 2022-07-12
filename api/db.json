@@ -1,3 +1,14 @@
 {
-  "posts": []
+  "posts": [
+    {
+      "title": "Introduction",
+      "body": "Python is a popular programming language.",
+      "id": 1
+    },
+    {
+      "title": "Introduction",
+      "body": "Python is a popular programming language.",
+      "id": 2
+    }
+  ]
 }
