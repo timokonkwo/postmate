@@ -9519,6 +9519,9 @@ document.querySelector('#posts').addEventListener('click', showEditState);
 /* delete posts on clicking delete button */
 document.querySelector('#posts').addEventListener('click', deletePost);
 
+/* remvoe edit state on clicking cancel button */
+document.querySelector('.card-form').addEventListener('click', cancelEdit);
+
 /* Function to get posts from server */
 function getPosts() {
     _http.http.get('http://localhost:3000/posts').then(function (data) {
@@ -9566,6 +9569,14 @@ function showEditState(e) {
     e.preventDefault();
 }
 
+/* Functio to cancel post edit */
+function cancelEdit(e) {
+    if (e.target.classList.contains('post-cancel')) {
+        _ui.ui.changeFormState('add');
+    }
+    e.preventDefault();
+}
+
 /* Function to delete a post */
 function deletePost(e) {
     var target = e.target.parentElement;
@@ -9575,13 +9586,14 @@ function deletePost(e) {
 
         if (confirm("Are you sure?")) {
             _http.http.delete('http://localhost:3000/posts/' + id).then(function () {
+                // ui.changeFormState('add');
                 _ui.ui.clearAlert();
                 _ui.ui.clearInput();
                 _ui.ui.showAlert('Post deleted', 'alert alert-danger');
                 getPosts();
             }).catch(function (err) {
-                return _ui.ui.showAlert('An Error Occured: ' + err.message, "alert alert-danger");
-            });
+                return console.log(err);
+            }, _ui.ui.showAlert('An Error Occured: ' + err, "alert alert-danger"));
         }
     }
 
@@ -9870,7 +9882,36 @@ var UI = function () {
     }, {
         key: 'changeFormState',
         value: function changeFormState(type) {
-            if (type === 'edit') {} else {}
+            if (type === 'edit') {
+
+                /* Change the button text to update */
+                this.formState = 'edit';
+                this.postSubmit.textContent = 'Update Post';
+                this.postSubmit.className = 'post-update btn btn-warning btn block';
+
+                /* Create a cancel button */
+                var cancelBtn = document.createElement('button');
+                cancelBtn.className = 'post-cancel btn btn-light mt-2';
+                cancelBtn.appendChild(document.createTextNode('Cancel'));
+
+                /* Get the container */
+                var cardForm = document.querySelector('.card-form');
+
+                /* Get the form end */
+                var formEnd = document.querySelector('.form-end');
+
+                /* Insert the cancel button */
+                cardForm.insertBefore(cancelBtn, formEnd);
+            } else {
+                /* Revert to add state */
+                this.clearInput();
+                this.formState = 'add';
+                this.postSubmit.textContent = 'Post';
+                this.postSubmit.className = 'post-submit btn btn-primary btn-block';
+
+                /* Remove cancel btn */
+                document.querySelector('.post-cancel').remove();
+            }
         }
     }]);
 
