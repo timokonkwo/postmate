@@ -9510,12 +9510,82 @@ var _ui = __webpack_require__(335);
 /* Get posts on DOM load */
 document.addEventListener('DOMContentLoaded', getPosts);
 
+/* Add posts on clicking post button */
+document.querySelector(".post-submit").addEventListener('click', postSubmit);
+
+/* show edit state on clicking edit button */
+document.querySelector('#posts').addEventListener('click', showEditState);
+
+/* delete posts on clicking delete button */
+document.querySelector('#posts').addEventListener('click', deletePost);
+
+/* Function to get posts from server */
 function getPosts() {
     _http.http.get('http://localhost:3000/posts').then(function (data) {
         return _ui.ui.showPosts(data);
     }).catch(function (err) {
         return console.log(err);
     });
+}
+
+/* Function to add post */
+function postSubmit() {
+    var title = document.querySelector("#title").value;
+    var body = document.querySelector("#body").value;
+
+    if (title !== '' && body !== '') {
+        var data = { title: title, body: body };
+
+        _http.http.post('http://localhost:3000/posts', data).then(function () {
+            _ui.ui.clearInput();
+            _ui.ui.clearAlert();
+            _ui.ui.showAlert('Post Added', "alert alert-success");
+            getPosts();
+        }).catch(function () {
+            return _ui.ui.showAlert('An Error Occured: ' + err.message, "alert alert-danger");
+        });
+    } else {
+        _ui.ui.clearAlert();
+        _ui.ui.showAlert('Fill the empty fields', "alert alert-danger");
+    }
+}
+
+/* Function to show edit state */
+function showEditState(e) {
+    var target = e.target.parentElement;
+    if (target.classList.contains('edit')) {
+        var id = target.id;
+        var title = target.previousElementSibling.previousElementSibling.textContent;
+        var body = target.previousElementSibling.textContent;
+
+        var data = { id: id, title: title, body: body };
+
+        _ui.ui.fillForm(data);
+    }
+
+    e.preventDefault();
+}
+
+/* Function to delete a post */
+function deletePost(e) {
+    var target = e.target.parentElement;
+
+    if (target.classList.contains('delete')) {
+        var id = target.id;
+
+        if (confirm("Are you sure?")) {
+            _http.http.delete('http://localhost:3000/posts/' + id).then(function () {
+                _ui.ui.clearAlert();
+                _ui.ui.clearInput();
+                _ui.ui.showAlert('Post deleted', 'alert alert-danger');
+                getPosts();
+            }).catch(function (err) {
+                return _ui.ui.showAlert('An Error Occured: ' + err.message, "alert alert-danger");
+            });
+        }
+    }
+
+    e.preventDefault();
 }
 
 /***/ }),
@@ -9735,11 +9805,11 @@ var UI = function () {
         _classCallCheck(this, UI);
 
         this.posts = document.querySelector('#posts');
-        this.titleInput = document.querySelector('title');
+        this.titleInput = document.querySelector('#title');
         this.bodyInput = document.querySelector('#body');
         this.idInput = document.querySelector('#id');
         this.postSubmit = document.querySelector('.post-submit');
-        this.forState = 'add';
+        this.formState = 'add';
     }
 
     _createClass(UI, [{
@@ -9748,10 +9818,59 @@ var UI = function () {
             var output = "";
 
             posts.forEach(function (post) {
-                output += '\n                <div class="card mb-3">\n                    <div class="card-body">\n                        <h4 class="card-title">' + post.title + '</h4>\n                        <p class="card-text">' + post.body + '</p>\n\n                        <a href="#" class="edit card-link">\n                            <i class="fa fa-pencil"></i>\n                        </a>\n\n                        <a href="#" class="edit card-link">\n                            <i class="fa fa-delete"></i>\n                        </a>\n                    </div>\n                </div>\n            ';
+                output += '\n                <div class="card mb-3">\n                    <div class="card-body">\n                        <h4 class="card-title">' + post.title + '</h4>\n                        <p class="card-text">' + post.body + '</p>\n\n                        <a href="#" class="edit card-link" data-id="' + post.id + '">\n                            <i class="fa fa-pencil"></i>\n                        </a>\n\n                        <a href="#" class="delete card-link" id="' + post.id + '">\n                            <i class="fa fa-remove"></i>\n                        </a>\n                    </div>\n                </div>\n            ';
             });
 
             this.posts.innerHTML = output;
+        }
+    }, {
+        key: 'showAlert',
+        value: function showAlert(message, className) {
+            var _this = this;
+
+            var div = document.createElement('div');
+            div.className = className;
+            div.appendChild(document.createTextNode('' + message));
+
+            /* get container */
+            var container = document.querySelector('.postContainer');
+
+            /* get posts container */
+            var posts = document.querySelector('#posts');
+
+            container.insertBefore(div, posts);
+
+            setTimeout(function () {
+                return _this.clearAlert();
+            }, 3000);
+        }
+    }, {
+        key: 'clearAlert',
+        value: function clearAlert() {
+            var currentAlert = document.querySelector('.alert');
+            if (currentAlert) {
+                currentAlert.remove();
+            }
+        }
+    }, {
+        key: 'clearInput',
+        value: function clearInput() {
+            this.titleInput.value = '';
+            this.bodyInput.value = '';
+        }
+    }, {
+        key: 'fillForm',
+        value: function fillForm(data) {
+            this.titleInput.value = data.title;
+            this.bodyInput.value = data.body;
+            this.idInput = data.id;
+
+            this.changeFormState('edit');
+        }
+    }, {
+        key: 'changeFormState',
+        value: function changeFormState(type) {
+            if (type === 'edit') {} else {}
         }
     }]);
 
