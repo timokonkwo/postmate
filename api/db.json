@@ -1,9 +1,9 @@
 {
   "posts": [
     {
-      "title": "Introduction",
-      "body": "Python is a programming language\n\nIt is used for many things",
-      "id": 1
+      "title": "Introduction to Python",
+      "body": "Python is a high level programming language.\n\nIt can be used for many purposes such as Web development, machine learning, data science and lots more\n",
+      "id": 2
     }
   ]
 }
